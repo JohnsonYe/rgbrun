@@ -14,6 +14,7 @@ export interface ISales {
   score?: string;
   gameTime?: string;
   type: SalesType;
+  gameType: string;
 }
 
 const TABLE_NAME_SLAES = "SalesTable";

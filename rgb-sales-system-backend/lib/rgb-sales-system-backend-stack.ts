@@ -59,12 +59,10 @@ export class RgbSalesSystemBackendStack extends cdk.Stack {
 
     // POST /sales
     salesResource.addMethod('POST', new apigateway.LambdaIntegration(createSalesLambda));
-
     salesResource.addCorsPreflight({
       allowOrigins: ['*'], // Allow all origins
-      allowMethods: ["GET","HEAD","OPTIONS","POST","PUT"], // Allowed methods
-      allowHeaders: ["Access-Control-Allow-Headers", "Origin" ,"Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers"],
-      allowCredentials: true,
+      allowMethods: ["GET","OPTIONS","POST","PUT"], // Allowed methods
+      allowHeaders: ["Content-Type", "Authorization"]
     });
   }
 

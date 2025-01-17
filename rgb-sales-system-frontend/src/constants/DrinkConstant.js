@@ -1,16 +1,19 @@
 const DFRINK_ITEM_LIST = [
   {
     id: 1,
+    item: "WATER",
     name: "Water",
     price: 1
   },
   {
     id: 2,
-    name: "Code",
+    item: "COKE",
+    name: "Coke",
     price: 2
   },
   {
     id: 3,
+    item: "MONSTER",
     name: "Monster",
     price: 3
   },

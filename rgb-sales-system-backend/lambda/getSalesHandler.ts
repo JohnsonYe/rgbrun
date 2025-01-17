@@ -3,7 +3,7 @@ import { SalesTableDao, ISales, generateSalesPK} from './dao/salesTableDao';
 
 // Handler for getting sales
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-
+  console.log("Process Get Handler.");
   try {
     // Extract query parameters
     const fromDate = event.queryStringParameters?.fromDate;
@@ -30,6 +30,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     return {
       statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*", // Restrict to frontend origin
+        "Access-Control-Allow-Headers": "*", // Allowed headers
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS", // Allowed methods
+      },
       body: JSON.stringify(response)
     };
   } catch (error) {

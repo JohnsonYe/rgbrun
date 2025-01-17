@@ -1,4 +1,4 @@
-const GAME_PRICE = { 
+export const GAME_PRICE = { 
     2: 19.99,
     3: 17.99,
     4: 14.99,
@@ -10,4 +10,19 @@ const GAME_PRICE = {
     10: 8.99
 };
 
-export default GAME_PRICE;
+export const CHALLENGE_GAME_PRICE = 20;
+
+export const GAME_TYPE = {
+    NORMAL: "NORMAL",
+    CHALLENGE: "CHALLENGE",
+}
+
+export const SALES_TYPE = {
+    GAME: "GAME",
+    DRINK: "DRINK",
+}
+// export default {
+//     CHALLENGE_GAME_PRICE,
+//     GAME_PRICE,
+//     GAME_TYPE
+// };

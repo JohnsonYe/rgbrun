@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import GAME_PRICE from "../../constants/GameConstant";
+import {GAME_PRICE, GAME_TYPE, CHALLENGE_GAME_PRICE, SALES_TYPE} from "../../constants/GameConstant";
 import DFRINK_ITEM_LIST from "../../constants/DrinkConstant";
 import Loading from "./Loading";
 import "./Modal.css";
+
+const SALES_CREATION_API = "https://ga6s88cd35.execute-api.us-west-1.amazonaws.com/prod/sales";
 
 function Modal({ onClose }) {
     const [activeForm, setActiveForm] = useState("Sales");
@@ -49,17 +51,24 @@ function SalesForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [comment, setComment] = useState(""); // Comment field
     const [paymentType, setPaymentType] = useState('CARD'); // Default to CARD
+    const [gameType, setGameType] = useState(GAME_TYPE.NORMAL);
+    
 
     // Calculate total amount whenever quantity or discount changes
-    const calculateTotal = (adultQty, kidQty, disc) => {
+    const calculateTotal = (adultQty, kidQty, disc, gameType = GAME_TYPE.NORMAL) => {
         let pricePerPerson = 0;
         const totalQty = adultQty + kidQty;
-        if (totalQty < 2) {
-            pricePerPerson = GAME_PRICE[2];
-        } else if (totalQty > 10) {
-            pricePerPerson = GAME_PRICE[10];
+
+        if (gameType == GAME_TYPE.CHALLENGE) {
+          pricePerPerson = CHALLENGE_GAME_PRICE;
         } else {
+          if (totalQty < 2) {
+            pricePerPerson = GAME_PRICE[2];
+          } else if (totalQty > 10) {
+            pricePerPerson = GAME_PRICE[10];
+          } else {
             pricePerPerson = GAME_PRICE[totalQty];
+          }
         }
 
         const baseAmount = adultQty * pricePerPerson;
@@ -91,7 +100,13 @@ function SalesForm() {
 
     const handlePaymentTypeToggle = (method) => {
       setPaymentType(method);
+      calculateTotal(quantity, kidQuantity, discount);
     };
+
+    const handleGameTypeToggle = (type) => {
+      setGameType(type);
+      calculateTotal(quantity, kidQuantity, discount, type);
+    }
       
     const handleSaleSubmit = async (e) => {
         e.preventDefault(); // Prevent page refresh
@@ -103,26 +118,21 @@ function SalesForm() {
             discount,
             comment,
             paymentType,
-            "salesType": "GAME"
+            "salesType": SALES_TYPE.GAME,
+            gameType
         }
-
-        console.log(salesData)
         
         try {
-          const response = await fetch("https://ga6s88cd35.execute-api.us-west-1.amazonaws.com/prod/sales", {
+          const response = await fetch(SALES_CREATION_API, {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*",
-              "Access-Control-Allow-Headers": "Content-Type, Authorization, Access-Control-Allow-Credentials"
-
+              'Content-Type': 'application/json',
             },
-            body: salesData
+            body: JSON.stringify(salesData)
           });
     
           if (response.ok) {
             const result = await response.json();
-            alert("Sales created successfully!");
             console.log("API Response:", result);
           } else {
             const error = await response.json();
@@ -134,11 +144,13 @@ function SalesForm() {
           setKidQuantity(0)
           setDiscount(0);
           setComment("");
+          setGameType(GAME_TYPE.NORMAL);
         } catch (err) {
           console.error("Network Error:", err);
           alert("Network error. Please try again or call 925-330-2206 for technical support");
         } finally {
           setIsSubmitting(false);
+          window.location.reload();
         }
     }
 
@@ -146,6 +158,29 @@ function SalesForm() {
         <>
             {isSubmitting && <Loading />}
             <form onSubmit={handleSaleSubmit}>
+
+            {/* Toggle Button for Payment Method */}
+            <div className="form-group">
+              <label>Game Type:</label>
+              <div className="toggle-button">
+                <button
+                  type="button"
+                  className={`toggle-option ${gameType === GAME_TYPE.NORMAL ? 'active' : ''}`}
+                  onClick={() => handleGameTypeToggle(GAME_TYPE.NORMAL)}
+                >
+                  Normal
+                </button>
+                <button
+                  type="button"
+                  className={`toggle-option ${gameType === GAME_TYPE.CHALLENGE ? 'active' : ''}`}
+                  onClick={() => handleGameTypeToggle(GAME_TYPE.CHALLENGE)}
+                >
+                  Challenge
+                </button>
+              </div>
+            </div>
+
+
             <div className="form-group">
                 <label>Adult Quantity:</label>
                 <input
@@ -217,6 +252,8 @@ function SalesForm() {
 function DrinksForm() {
     const [rows, setRows] = useState([{ drink: "", quantity: 1, price: 0 }]); // Default with one row
     const [totalAmount, setTotalAmount] = useState(0);
+    const [paymentType, setPaymentType] = useState('CARD'); // Default to CARD
+    const [isSubmitting, setIsSubmitting] = useState(false);
   
     // Handle dropdown selection
     const handleDrinkChange = (index, value) => {
@@ -226,6 +263,10 @@ function DrinksForm() {
       updatedRows[index].price = selectedDrink ? selectedDrink.price : 0; // Set price based on selection
       setRows(updatedRows);
       calculateTotal(updatedRows);
+    };
+
+    const handlePaymentTypeToggle = (method) => {
+      setPaymentType(method);
     };
   
     // Handle quantity change
@@ -254,9 +295,63 @@ function DrinksForm() {
       const total = rows.reduce((sum, row) => sum + row.quantity * row.price, 0);
       setTotalAmount(Math.ceil(total * 100) / 100); // Round up to 2 decimals
     };
+
+    const handleSaleSubmit = async (e) => {
+        e.preventDefault(); // Prevent page refresh
+        let quantity = 0;
+        let amount = 0;
+        let comments = [];
+        rows.forEach(row => {
+          quantity += row.quantity;
+          let totleItemsPrice = row.quantity * row.price;
+          amount += totleItemsPrice;
+          comments.push(row.drink + ": " + quantity);
+        });
+        
+        if (amount <= 0) {
+          alert("Please select a drink before submit.");
+          return;
+        }
+
+        const salesData = {
+          quantity: quantity,
+          totalAmount: amount,
+          discount: 0,
+          comment: comments.join(", "),
+          paymentType,
+          "salesType": SALES_TYPE.DRINK,
+          gameType: ""
+        };
+        setIsSubmitting(true);
+  
+        try {
+          const response = await fetch(SALES_CREATION_API, {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(salesData)
+          });
+    
+          if (response.ok) {
+            const result = await response.json();
+            console.log("API Response:", result);
+          } else {
+            const error = await response.json();
+            alert(`Error: ${error.message}`);
+            console.error("API Error:", error);
+          }
+        } catch (err) {
+          console.error("Network Error:", err);
+          alert("Network error. Please try again or call 925-330-2206 for technical support");
+        } finally {
+          setIsSubmitting(false);
+          window.location.reload();
+        }
+    }
   
     return (
-      <form>
+      <form onSubmit={handleSaleSubmit}>
         {/* Drink Rows */}
         {rows.map((row, index) => (
           <div key={index} className="drink-row">
@@ -292,6 +387,27 @@ function DrinksForm() {
         <button type="button" className="add-btn" onClick={addRow}>
           +
         </button>
+
+        {/* Toggle Button for Payment Method */}
+        <div className="form-group">
+          <label>Payment Type:</label>
+          <div className="toggle-button">
+            <button
+              type="button"
+              className={`toggle-option ${paymentType === 'CARD' ? 'active' : ''}`}
+              onClick={() => handlePaymentTypeToggle('CARD')}
+            >
+              CARD
+            </button>
+            <button
+              type="button"
+              className={`toggle-option ${paymentType === 'CASH' ? 'active' : ''}`}
+              onClick={() => handlePaymentTypeToggle('CASH')}
+            >
+              CASH
+            </button>
+          </div>
+        </div>
   
         {/* Total Amount */}
         <div className="form-group">

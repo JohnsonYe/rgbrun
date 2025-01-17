@@ -6,9 +6,9 @@ import {TimeZoneUtil} from './utils/timezoneUtil';
 // Handler for creating sales
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
+    console.log("Handler Step: We are here, event body is: ", event.body);
     const body = JSON.parse(event.body || '{}');
-    const { quantity, totalAmount, discount, paymentType, comment, salesType } = body;
-    
+    const { quantity, totalAmount, discount, paymentType, comment, salesType, gameType } = body;
     // Generate Los Angeles date and timestamp
     const now = TimeZoneUtil.getCurrentTimeInTimeZone('America/Los_Angeles');
 
@@ -27,6 +27,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         discount: discount,
         comment: comment,
         type: givenSalesType,
+        gameType: gameType
     }
 
     const salesTabledao = new SalesTableDao();
@@ -37,9 +38,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       statusCode: 201,
       headers: {
         "Access-Control-Allow-Origin": "*", // Restrict to frontend origin
+        "Access-Control-Allow-Headers": "*", // Allowed headers
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS", // Allowed methods
-        "Access-Control-Allow-Headers": "Content-Type, Authorization", // Allowed headers
-        "Access-Control-Allow-Credentials": "true", // Allow credentials
       },
       body: JSON.stringify({
         message: 'Sale created successfully',
