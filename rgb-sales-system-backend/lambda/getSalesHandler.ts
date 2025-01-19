@@ -3,7 +3,6 @@ import { SalesTableDao, ISales, generateSalesPK} from './dao/salesTableDao';
 
 // Handler for getting sales
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  console.log("Process Get Handler.");
   try {
     // Extract query parameters
     const fromDate = event.queryStringParameters?.fromDate;

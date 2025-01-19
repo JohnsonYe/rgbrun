@@ -6,7 +6,6 @@ import {TimeZoneUtil} from './utils/timezoneUtil';
 // Handler for creating sales
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
-    console.log("Handler Step: We are here, event body is: ", event.body);
     const body = JSON.parse(event.body || '{}');
     const { quantity, totalAmount, discount, paymentType, comment, salesType, gameType } = body;
     // Generate Los Angeles date and timestamp

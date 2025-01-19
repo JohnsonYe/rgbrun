@@ -2,6 +2,10 @@ import { DynamoDbAccessor } from './dynamoDbAccessor';
 import { SalesType, PaymentType } from '../enum/salesEnum';
 import {TimeZoneUtil} from '../utils/timezoneUtil';
 
+export interface IUpdateSales {
+    comment: string;
+    score: string;  
+}
 
 export interface ISales {
   PK: string; // Partition Key (e.g., SALES#YYYY-MM-DD)

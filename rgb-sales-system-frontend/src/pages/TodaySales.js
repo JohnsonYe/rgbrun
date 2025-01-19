@@ -9,6 +9,10 @@ const TodaySales = () => {
   const [error, setError] = useState(null); // State to handle errors
   const [totalSales, setTotalSales] = useState(0);
 
+  const [editRowId, setEditRowId] = useState(null); // Track the row being edited
+  const [editedRowData, setEditedRowData] = useState({}); // Store the updated data for the row
+  const showActionButton = true;
+
   // Helper function to get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
     const today = new Date();
@@ -59,9 +63,10 @@ const TodaySales = () => {
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
       {!loading && !error && sales.length === 0 && <p>No sales for today.</p>}
-      <p>Today total sales: ${totalSales}</p>
+      <p>Today total sales: ${totalSales.toFixed(2)}</p>
       {!loading && !error && sales.length > 0 && (
-        TableComponent(sales)
+
+        <TableComponent sales={sales} setSales={setSales} showActionButton={showActionButton} editRowId={editRowId} setEditRowId={setEditRowId} editedRowData={editedRowData} setEditedRowData={setEditedRowData} />
       )}
     </div>
   );

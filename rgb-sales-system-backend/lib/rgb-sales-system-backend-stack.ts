@@ -21,7 +21,7 @@ export class RgbSalesSystemBackendStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_18_X,
       code: lambda.Code.fromAsset('lambda'), // Path to the lambda folder
       handler: 'getSalesHandler.handler', // Reference the getSales.ts handler
-      timeout: cdk.Duration.seconds(10),
+      timeout: cdk.Duration.seconds(15),
       environment: {
         TABLE_NAME: 'SalesTable', // DynamoDB Table Name
       },
@@ -39,10 +39,23 @@ export class RgbSalesSystemBackendStack extends cdk.Stack {
       },
     });
 
+    // Lambda Function for createSales
+    const updateSalesLambda = new lambda.Function(this, 'UpdateSalesLambda', {
+      functionName: "UpdateSalesHandler",
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('lambda'), // Path to the lambda folder
+      handler: 'UpdateSalesHandler.handler', // Reference the createSales.ts handler
+      timeout: cdk.Duration.seconds(10),
+      environment: {
+        TABLE_NAME: 'SalesTable', // DynamoDB Table Name
+      },
+    });
+
     const salesTable = this.createSalesTable();
 
     salesTable.grantFullAccess(getSalesLambda);
     salesTable.grantFullAccess(createSalesLambda);
+    salesTable.grantFullAccess(updateSalesLambda);
 
     // API Gateway
     const api = new apigateway.RestApi(this, 'SalesApi', {
@@ -59,6 +72,8 @@ export class RgbSalesSystemBackendStack extends cdk.Stack {
 
     // POST /sales
     salesResource.addMethod('POST', new apigateway.LambdaIntegration(createSalesLambda));
+    salesResource.addMethod('PUT', new apigateway.LambdaIntegration(updateSalesLambda));
+
     salesResource.addCorsPreflight({
       allowOrigins: ['*'], // Allow all origins
       allowMethods: ["GET","OPTIONS","POST","PUT"], // Allowed methods

@@ -11,6 +11,7 @@ function HistorySales() {
   const [loading, setLoading] = useState(true); // State to handle loading
   const [startSearch, setStartSearch] = useState(false);
   const [error, setError] = useState(null); // State to handle errors
+  const [totalSales, setTotalSales] = useState(0);
 
   // Format the date to "YYYY-MM-DD"
   const formatDate = (date) => {
@@ -43,6 +44,13 @@ function HistorySales() {
       }
       const salesResponse = await response.json();
       setSales(salesResponse.data); // Set sales data
+      if (salesResponse.data != null) {
+        let total = 0;
+        salesResponse.data.forEach(salesData => {
+          total += salesData.totalAmount;
+        });
+        setTotalSales(total);
+      }
     } catch (err) {
       setError(err.message); // Set error message
     } finally {
@@ -52,7 +60,6 @@ function HistorySales() {
 
   return (
     <div>
-      <h1>History Sales</h1>
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         {/* From Date */}
         <div>
@@ -80,14 +87,14 @@ function HistorySales() {
         <button onClick={handleSearch}>Search</button>
       </div>
 
-      <div className="today-sales">
+      <div className="history-sales">
         {startSearch && loading && <Loading />}
         {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
-        {!loading && !error && sales.length === 0 && <p>No sales from {fromDate} - {toDate}.</p>}
-        
+        {!loading && !error && sales.length === 0 && <p>No sales from {formatDate(fromDate)} - {formatDate(toDate)}.</p>}
+        {!loading && !error && sales.length > 0 && <p>Sales from : ${totalSales.toFixed(2)}</p>}
         {!loading && !error && sales.length > 0 && (
-          TableComponent(sales)
+          <TableComponent sales={sales} showActionButton={false} />
         )}
       </div>
     </div>

@@ -52,6 +52,7 @@ function SalesForm() {
     const [comment, setComment] = useState(""); // Comment field
     const [paymentType, setPaymentType] = useState('CARD'); // Default to CARD
     const [gameType, setGameType] = useState(GAME_TYPE.NORMAL);
+    const [isCommentUpdated, setIsCommentUpdated] = useState(false);
     
 
     // Calculate total amount whenever quantity or discount changes
@@ -75,7 +76,10 @@ function SalesForm() {
         const baseKidAmount = kidQty * pricePerPerson * 0.5;
         const discountedAmount = baseAmount - baseAmount * (disc / 100) + baseKidAmount;
         const roundedAmount = Math.ceil(discountedAmount * 100) / 100; // Round up to 2 decimals
+        
+        setComment(adultQty + " adult and " + kidQty + " kids under 4ft");
         setTotalAmount(roundedAmount);
+        setIsCommentUpdated(true);
     };
 
     // Handle quantity change
@@ -111,12 +115,17 @@ function SalesForm() {
     const handleSaleSubmit = async (e) => {
         e.preventDefault(); // Prevent page refresh
         setIsSubmitting(true);
-        
+        let manualComment = comment;
+        if (!isCommentUpdated) {
+          setComment(quantity + " adult and 0 kids under 4ft");
+          manualComment = quantity + " adult and 0 kids under 4ft";
+        }
+
         const salesData = {
             quantity: quantity + kidQuantity,
             totalAmount,
             discount,
-            comment,
+            comment: manualComment,
             paymentType,
             "salesType": SALES_TYPE.GAME,
             gameType
@@ -145,6 +154,7 @@ function SalesForm() {
           setDiscount(0);
           setComment("");
           setGameType(GAME_TYPE.NORMAL);
+          setIsCommentUpdated(false);
         } catch (err) {
           console.error("Network Error:", err);
           alert("Network error. Please try again or call 925-330-2206 for technical support");
