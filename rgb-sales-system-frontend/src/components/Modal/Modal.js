@@ -60,7 +60,7 @@ function SalesForm() {
         let pricePerPerson = 0;
         const totalQty = adultQty + kidQty;
 
-        if (gameType == GAME_TYPE.CHALLENGE) {
+        if (gameType === GAME_TYPE.CHALLENGE) {
           pricePerPerson = CHALLENGE_GAME_PRICE;
         } else {
           if (totalQty < 2) {
@@ -77,7 +77,7 @@ function SalesForm() {
         const discountedAmount = baseAmount - baseAmount * (disc / 100) + baseKidAmount;
         const roundedAmount = Math.ceil(discountedAmount * 100) / 100; // Round up to 2 decimals
         
-        setComment(adultQty + " adult and " + kidQty + " kids under 4ft");
+        setComment(adultQty + " adults and " + kidQty + " kids under 4ft");
         setTotalAmount(roundedAmount);
         setIsCommentUpdated(true);
     };
@@ -117,8 +117,8 @@ function SalesForm() {
         setIsSubmitting(true);
         let manualComment = comment;
         if (!isCommentUpdated) {
-          setComment(quantity + " adult and 0 kids under 4ft");
-          manualComment = quantity + " adult and 0 kids under 4ft";
+          setComment(quantity + " adults and 0 kids under 4ft");
+          manualComment = quantity + " adults and 0 kids under 4ft";
         }
 
         const salesData = {
@@ -361,73 +361,76 @@ function DrinksForm() {
     }
   
     return (
-      <form onSubmit={handleSaleSubmit}>
-        {/* Drink Rows */}
-        {rows.map((row, index) => (
-          <div key={index} className="drink-row">
-            <select
-              value={row.drink}
-              onChange={(e) => handleDrinkChange(index, e.target.value)}
-            >
-              <option value="">Select a drink</option>
-              {DFRINK_ITEM_LIST.map((item) => (
-                <option key={item.id} value={item.name}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-            <input
-              type="number"
-              value={row.quantity}
-              onChange={(e) => handleQuantityChange(index, e.target.value)}
-              placeholder="Quantity"
-            />
-            {rows.length > 1 && (
+      <>
+        {isSubmitting && <Loading />}
+        <form onSubmit={handleSaleSubmit}>
+          {/* Drink Rows */}
+          {rows.map((row, index) => (
+            <div key={index} className="drink-row">
+              <select
+                value={row.drink}
+                onChange={(e) => handleDrinkChange(index, e.target.value)}
+              >
+                <option value="">Select a drink</option>
+                {DFRINK_ITEM_LIST.map((item) => (
+                  <option key={item.id} value={item.name}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                value={row.quantity}
+                onChange={(e) => handleQuantityChange(index, e.target.value)}
+                placeholder="Quantity"
+              />
+              {rows.length > 1 && (
+                <button
+                  type="button"
+                  className="remove-btn"
+                  onClick={() => removeRow(index)}
+                >
+                  -
+                </button>
+              )}
+            </div>
+          ))}
+          {/* Add Row Button */}
+          <button type="button" className="add-btn" onClick={addRow}>
+            +
+          </button>
+
+          {/* Toggle Button for Payment Method */}
+          <div className="form-group">
+            <label>Payment Type:</label>
+            <div className="toggle-button">
               <button
                 type="button"
-                className="remove-btn"
-                onClick={() => removeRow(index)}
+                className={`toggle-option ${paymentType === 'CARD' ? 'active' : ''}`}
+                onClick={() => handlePaymentTypeToggle('CARD')}
               >
-                -
+                CARD
               </button>
-            )}
+              <button
+                type="button"
+                className={`toggle-option ${paymentType === 'CASH' ? 'active' : ''}`}
+                onClick={() => handlePaymentTypeToggle('CASH')}
+              >
+                CASH
+              </button>
+            </div>
           </div>
-        ))}
-        {/* Add Row Button */}
-        <button type="button" className="add-btn" onClick={addRow}>
-          +
-        </button>
-
-        {/* Toggle Button for Payment Method */}
-        <div className="form-group">
-          <label>Payment Type:</label>
-          <div className="toggle-button">
-            <button
-              type="button"
-              className={`toggle-option ${paymentType === 'CARD' ? 'active' : ''}`}
-              onClick={() => handlePaymentTypeToggle('CARD')}
-            >
-              CARD
-            </button>
-            <button
-              type="button"
-              className={`toggle-option ${paymentType === 'CASH' ? 'active' : ''}`}
-              onClick={() => handlePaymentTypeToggle('CASH')}
-            >
-              CASH
-            </button>
+    
+          {/* Total Amount */}
+          <div className="form-group">
+            <label>Total Amount ($):</label>
+            <input type="number" value={totalAmount} readOnly />
           </div>
-        </div>
-  
-        {/* Total Amount */}
-        <div className="form-group">
-          <label>Total Amount ($):</label>
-          <input type="number" value={totalAmount} readOnly />
-        </div>
-        <button type="submit" className="submit-btn">
-          Submit
-        </button>
-      </form>
+          <button type="submit" className="submit-btn">
+            Submit
+          </button>
+        </form>
+      </>
     );
 }
 
