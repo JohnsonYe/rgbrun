@@ -6,10 +6,10 @@ function Navbar({ onCreateSales }) {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <Link to="/rgbrun/" className="nav-link">
+        <Link to="/" className="nav-link">
           <div className="navbar-button">Today's Sales</div>
         </Link>
-        <Link to="/rgbrun/history-sales" className="nav-link">
+        <Link to="/history-sales" className="nav-link">
             <div className="navbar-button">History Sales</div>
         </Link>
       </div>

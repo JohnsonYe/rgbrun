@@ -6,7 +6,7 @@ import Modal from "./components/Modal/Modal";
 
 function App() {
   const [showModal, setShowModal] = useState(false);
-
+  const [globalTodaySales, setGlobalTodaySales] = useState([]); // State to store sales data
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
@@ -14,8 +14,8 @@ function App() {
     <div className="RgbRunSalesApp">
       <Router>
         <Navbar onCreateSales={openModal} />
-        <MainContent />
-        {showModal && <Modal onClose={closeModal} />}
+        <MainContent globalTodaySales={globalTodaySales} setGlobalTodaySales={setGlobalTodaySales} />
+        {showModal && <Modal onClose={closeModal} globalTodaySales={globalTodaySales} setGlobalTodaySales={setGlobalTodaySales} />}
       </Router>
     </div>
   );

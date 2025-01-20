@@ -6,7 +6,7 @@ import "./Modal.css";
 
 const SALES_CREATION_API = "https://ga6s88cd35.execute-api.us-west-1.amazonaws.com/prod/sales";
 
-function Modal({ onClose }) {
+function Modal({ onClose, globalTodaySales, setGlobalTodaySales}) {
     const [activeForm, setActiveForm] = useState("Sales");
 
     const handleFormSwitch = (form) => {
@@ -33,7 +33,8 @@ function Modal({ onClose }) {
             </div>
     
             {/* Render Active Form */}
-            {activeForm === "Sales" ? <SalesForm /> : <DrinksForm />}
+            {activeForm === "Sales" ? <SalesForm globalTodaySales={globalTodaySales} setGlobalTodaySales={setGlobalTodaySales} onClose={onClose} /> 
+            : <DrinksForm globalTodaySales={globalTodaySales} setGlobalTodaySales={setGlobalTodaySales} onClose={onClose} />}
     
             <button type="button" className="close-btn" onClick={onClose}>
               Close
@@ -43,7 +44,13 @@ function Modal({ onClose }) {
       );
 }
 
-function SalesForm() {
+function SalesForm(
+  {
+    globalTodaySales, 
+    setGlobalTodaySales,
+    onClose
+  }
+) {
     const [quantity, setQuantity] = useState(2); // Default quantity
     const [kidQuantity, setKidQuantity] = useState(0); // Default kids quantity
     const [discount, setDiscount] = useState(0); // Default discount ratio
@@ -143,6 +150,8 @@ function SalesForm() {
           if (response.ok) {
             const result = await response.json();
             console.log("API Response:", result);
+            globalTodaySales.push(result.salesData);
+            setGlobalTodaySales(globalTodaySales);
           } else {
             const error = await response.json();
             alert(`Error: ${error.message}`);
@@ -155,12 +164,12 @@ function SalesForm() {
           setComment("");
           setGameType(GAME_TYPE.NORMAL);
           setIsCommentUpdated(false);
+          onClose();
         } catch (err) {
           console.error("Network Error:", err);
           alert("Network error. Please try again or call 925-330-2206 for technical support");
         } finally {
           setIsSubmitting(false);
-          window.location.reload();
         }
     }
 
@@ -259,7 +268,11 @@ function SalesForm() {
       );
 }
 
-function DrinksForm() {
+function DrinksForm({
+  globalTodaySales, 
+  setGlobalTodaySales,
+  onClose
+}) {
     const [rows, setRows] = useState([{ drink: "", quantity: 1, price: 0 }]); // Default with one row
     const [totalAmount, setTotalAmount] = useState(0);
     const [paymentType, setPaymentType] = useState('CARD'); // Default to CARD
@@ -346,17 +359,20 @@ function DrinksForm() {
           if (response.ok) {
             const result = await response.json();
             console.log("API Response:", result);
+            globalTodaySales.push(result.salesData);
+            setGlobalTodaySales(globalTodaySales);
           } else {
             const error = await response.json();
             alert(`Error: ${error.message}`);
             console.error("API Error:", error);
           }
+          onClose();
         } catch (err) {
           console.error("Network Error:", err);
           alert("Network error. Please try again or call 925-330-2206 for technical support");
         } finally {
           setIsSubmitting(false);
-          window.location.reload();
+          onClose();
         }
     }
   

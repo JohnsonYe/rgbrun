@@ -3,8 +3,8 @@ import TableComponent from './Table';
 import "./TodaySales.css";
 import Loading from "../components/Modal/Loading";
 
-const TodaySales = () => {
-  const [sales, setSales] = useState([]); // State to store sales data
+const TodaySales = ({globalTodaySales=globalTodaySales, setGlobalTodaySales=setGlobalTodaySales}) => {
+  // const [sales, setSales] = useState([]); // State to store sales data
   const [loading, setLoading] = useState(true); // State to handle loading
   const [error, setError] = useState(null); // State to handle errors
   const [totalSales, setTotalSales] = useState(0);
@@ -39,7 +39,7 @@ const TodaySales = () => {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const salesResponse = await response.json();
-        setSales(salesResponse.data); // Set sales data
+        setGlobalTodaySales(salesResponse.data); // Set sales data
         let total = 0;
         if (salesResponse.data != null) {
           salesResponse.data.forEach(data => {
@@ -62,11 +62,11 @@ const TodaySales = () => {
       {loading && <Loading />}
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
-      {!loading && !error && sales.length === 0 && <p>No sales for today.</p>}
+      {!loading && !error && globalTodaySales.length === 0 && <p>No sales for today.</p>}
       <p>Today total sales: ${totalSales.toFixed(2)}</p>
-      {!loading && !error && sales.length > 0 && (
+      {!loading && !error && globalTodaySales.length > 0 && (
 
-        <TableComponent sales={sales} setSales={setSales} showActionButton={showActionButton} editRowId={editRowId} setEditRowId={setEditRowId} editedRowData={editedRowData} setEditedRowData={setEditedRowData} />
+        <TableComponent sales={globalTodaySales} setSales={setGlobalTodaySales} showActionButton={showActionButton} editRowId={editRowId} setEditRowId={setEditRowId} editedRowData={editedRowData} setEditedRowData={setEditedRowData} />
       )}
     </div>
   );
