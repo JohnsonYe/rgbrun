@@ -15,9 +15,7 @@ const TableComponent = ({
     const handleEdit = (rowId) => {
         setEditRowId(rowId);
         const rowToEdit = sales.find((sale) => sale.SK === rowId);
-        console.log("rowId: ", rowId);
         setEditedRowData({ ...rowToEdit });
-        console.log("rowToEdit: ", rowToEdit);
     };
 
     const handleCancel = () => {
@@ -87,7 +85,7 @@ const TableComponent = ({
                     <td>{sale.paymentType}</td>
                     <td>{sale.discount}%</td>
                     <td>
-                        {editRowId === sale.SK ? (<input type="text" value={editedRowData.score || ""} onChange={(e) => handleInputChange(e, "score")}></input>) : (sale.score || "0")}
+                        {editRowId === sale.SK ? (<input type="text" value={editedRowData.score || "0"} onChange={(e) => handleInputChange(e, "score")}></input>) : (sale.score || "0")}
                     </td>
                     <td>
                         {editRowId === sale.SK ? (<input type="text" value={editedRowData.comment || ""} onChange={(e) => handleInputChange(e, "comment")}></input>) : (sale.comment || "None")}

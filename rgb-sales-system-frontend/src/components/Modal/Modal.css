@@ -39,13 +39,13 @@
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   display: flex;
   flex-direction: column;
 }
 
 label {
-  margin-bottom: 5px;
+  margin-bottom: 2px;
 }
 
 input,
@@ -58,7 +58,7 @@ textarea {
 
 textarea {
   resize: none;
-  height: 80px;
+  height: 30px;
 }
 
 .submit-btn {
@@ -117,7 +117,7 @@ select {
 }
 
 .form-group {
-  margin-top: 20px;
+  margin-top: 5px;
 }
 
 label {
@@ -132,8 +132,8 @@ label {
 
 .toggle-option {
   flex: 1;
-  padding: 10px;
-  font-size: 16px;
+  padding: 8px;
+  font-size: 12px;
   font-weight: bold;
   text-align: center;
   border: 1px solid #ddd;

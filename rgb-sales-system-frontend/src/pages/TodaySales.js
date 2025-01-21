@@ -8,6 +8,8 @@ const TodaySales = ({globalTodaySales=globalTodaySales, setGlobalTodaySales=setG
   const [loading, setLoading] = useState(true); // State to handle loading
   const [error, setError] = useState(null); // State to handle errors
   const [totalSales, setTotalSales] = useState(0);
+  const [cashSales, setCashSales] = useState(0);
+  const [cardSales, setCardSales] = useState(0);
 
   const [editRowId, setEditRowId] = useState(null); // Track the row being edited
   const [editedRowData, setEditedRowData] = useState({}); // Store the updated data for the row
@@ -41,11 +43,20 @@ const TodaySales = ({globalTodaySales=globalTodaySales, setGlobalTodaySales=setG
         const salesResponse = await response.json();
         setGlobalTodaySales(salesResponse.data); // Set sales data
         let total = 0;
+        let cash = 0;
+        let card = 0;
         if (salesResponse.data != null) {
           salesResponse.data.forEach(data => {
             total += data.totalAmount;
-            setTotalSales(total);
-          })
+            if (data.paymentType === "CASH") {
+              cash += data.totalAmount;
+            } else if (data.paymentType === "CARD") {
+              card += data.totalAmount;
+            }
+          });
+          setTotalSales(total);
+          setCashSales(cash);
+          setCardSales(card);
         }
       } catch (err) {
         setError(err.message); // Set error message
@@ -63,7 +74,7 @@ const TodaySales = ({globalTodaySales=globalTodaySales, setGlobalTodaySales=setG
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
       {!loading && !error && globalTodaySales.length === 0 && <p>No sales for today.</p>}
-      <p>Today total sales: ${totalSales.toFixed(2)}</p>
+      <p>Today total sales: ${totalSales.toFixed(2)} - (Card: ${cardSales.toFixed(2)}, Cash: ${cashSales.toFixed(2)})</p>
       {!loading && !error && globalTodaySales.length > 0 && (
 
         <TableComponent sales={globalTodaySales} setSales={setGlobalTodaySales} showActionButton={showActionButton} editRowId={editRowId} setEditRowId={setEditRowId} editedRowData={editedRowData} setEditedRowData={setEditedRowData} />

@@ -12,6 +12,8 @@ function HistorySales() {
   const [startSearch, setStartSearch] = useState(false);
   const [error, setError] = useState(null); // State to handle errors
   const [totalSales, setTotalSales] = useState(0);
+  const [cashSales, setCashSales] = useState(0);
+  const [cardSales, setCardSales] = useState(0);
 
   // Format the date to "YYYY-MM-DD"
   const formatDate = (date) => {
@@ -46,10 +48,19 @@ function HistorySales() {
       setSales(salesResponse.data); // Set sales data
       if (salesResponse.data != null) {
         let total = 0;
+        let cash = 0;
+        let card = 0;
         salesResponse.data.forEach(salesData => {
           total += salesData.totalAmount;
+          if (salesData.paymentType === "CASH") {
+            cash += salesData.totalAmount;
+          } else if (salesData.paymentType === "CARD") {
+            card += salesData.totalAmount;
+          }
         });
         setTotalSales(total);
+        setCashSales(cash);
+        setCardSales(card);
       }
     } catch (err) {
       setError(err.message); // Set error message
@@ -92,7 +103,7 @@ function HistorySales() {
         {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
         {!loading && !error && sales.length === 0 && <p>No sales from {formatDate(fromDate)} - {formatDate(toDate)}.</p>}
-        {!loading && !error && sales.length > 0 && <p>Sales from : ${totalSales.toFixed(2)}</p>}
+        {!loading && !error && sales.length > 0 && <p>Total sales : ${totalSales.toFixed(2)} - (Card: ${cardSales.toFixed(2)}, Cash: ${cashSales.toFixed(2)})</p>}
         {!loading && !error && sales.length > 0 && (
           <TableComponent sales={sales} showActionButton={false} />
         )}
