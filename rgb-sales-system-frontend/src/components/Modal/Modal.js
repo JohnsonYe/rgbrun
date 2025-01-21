@@ -87,6 +87,7 @@ function SalesForm(
         setComment(adultQty + " adults and " + kidQty + " kids under 4ft");
         setTotalAmount(roundedAmount);
         setIsCommentUpdated(true);
+        return roundedAmount;
     };
 
     // Handle quantity change
@@ -108,6 +109,13 @@ function SalesForm(
         setDiscount(disc);
         calculateTotal(quantity, kidQuantity, disc);
     };
+
+    const handleTotalAmountChange = (e) => {
+      const originalTotalAmount = calculateTotal(quantity, kidQuantity, discount);
+      const overridedAmount = Math.max(0, parseFloat(e.target.value) || 0);
+      setTotalAmount(overridedAmount);
+      setComment(`Override amount: $${overridedAmount}, Original amount: $${originalTotalAmount} for ${quantity} adults and ${kidQuantity} kids under 3.5ft`);
+    }
 
     const handlePaymentTypeToggle = (method) => {
       setPaymentType(method);
@@ -231,7 +239,11 @@ function SalesForm(
             </div>
             <div className="form-group">
                 <label>Total Amount ($):</label>
-                <input type="number" value={totalAmount} readOnly />
+                <input type="number" 
+                value={totalAmount}
+                onChange={handleTotalAmountChange}
+                placeholder={totalAmount}
+                />
             </div>
 
 
