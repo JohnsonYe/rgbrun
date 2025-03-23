@@ -39,7 +39,7 @@ export class RgbSalesSystemBackendStack extends cdk.Stack {
       },
     });
 
-    // Lambda Function for createSales
+    // Lambda Function for updateSales
     const updateSalesLambda = new lambda.Function(this, 'UpdateSalesLambda', {
       functionName: "UpdateSalesHandler",
       runtime: lambda.Runtime.NODEJS_18_X,
@@ -51,11 +51,48 @@ export class RgbSalesSystemBackendStack extends cdk.Stack {
       },
     });
 
+    const createPartyLambda = new lambda.Function(this, "CreatePartyLambda", {
+        functionName: "CreatePartyHandler",
+        runtime: lambda.Runtime.NODEJS_18_X,
+        code: lambda.Code.fromAsset('lambda'), // Path to the lambda folder
+        handler: 'createPartyHandler.handler', // Reference the createSales.ts handler
+        timeout: cdk.Duration.seconds(10),
+        environment: {
+          TABLE_NAME: 'SalesTable', // DynamoDB Table Name
+        },
+    });
+
+    const getPartyLambda = new lambda.Function(this, "GetPartyLambda", {
+        functionName: "GetPartyHandler",
+        runtime: lambda.Runtime.NODEJS_18_X,
+        code: lambda.Code.fromAsset('lambda'), // Path to the lambda folder
+        handler: 'getPartyHandler.handler', // Reference the createSales.ts handler
+        timeout: cdk.Duration.seconds(10),
+        environment: {
+          TABLE_NAME: 'SalesTable', // DynamoDB Table Name
+        },
+    });
+
+    // Lambda Function for updateSales
+    const updatePartyLambda = new lambda.Function(this, 'UpdatePartyLambda', {
+      functionName: "UpdatePartyHandler",
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('lambda'), // Path to the lambda folder
+      handler: 'updatePartyHandler.handler', // Reference the createSales.ts handler
+      timeout: cdk.Duration.seconds(10),
+      environment: {
+        TABLE_NAME: 'SalesTable', // DynamoDB Table Name
+      },
+    });
+
     const salesTable = this.createSalesTable();
 
     salesTable.grantFullAccess(getSalesLambda);
     salesTable.grantFullAccess(createSalesLambda);
     salesTable.grantFullAccess(updateSalesLambda);
+    salesTable.grantFullAccess(createPartyLambda);
+    salesTable.grantFullAccess(getPartyLambda);
+    salesTable.grantFullAccess(updatePartyLambda);
 
     // API Gateway
     const api = new apigateway.RestApi(this, 'SalesApi', {
@@ -74,11 +111,20 @@ export class RgbSalesSystemBackendStack extends cdk.Stack {
     salesResource.addMethod('POST', new apigateway.LambdaIntegration(createSalesLambda));
     salesResource.addMethod('PUT', new apigateway.LambdaIntegration(updateSalesLambda));
 
-    salesResource.addCorsPreflight({
+    const partyResource = api.root.addResource('party');
+    // POST /party
+    partyResource.addMethod('GET', new apigateway.LambdaIntegration(getPartyLambda));
+    partyResource.addMethod('POST', new apigateway.LambdaIntegration(createPartyLambda));
+    partyResource.addMethod('PUT', new apigateway.LambdaIntegration(updatePartyLambda));
+
+    const PRE_FLIGHT_OPTION = {
       allowOrigins: ['*'], // Allow all origins
       allowMethods: ["GET","OPTIONS","POST","PUT"], // Allowed methods
       allowHeaders: ["Content-Type", "Authorization"]
-    });
+    };
+
+    salesResource.addCorsPreflight(PRE_FLIGHT_OPTION);
+    partyResource.addCorsPreflight(PRE_FLIGHT_OPTION);
   }
 
   
