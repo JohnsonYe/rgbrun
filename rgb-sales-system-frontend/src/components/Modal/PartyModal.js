@@ -142,7 +142,6 @@ function PartyModal({ onClose, globalTodaySales, setGlobalTodaySales}) {
 
             const responseData = await response.json();
             console.log("Booking Successful:", responseData);
-            alert("Booking submitted successfully!");
 
             // Optionally reset the form
             setFormData({
@@ -160,7 +159,7 @@ function PartyModal({ onClose, globalTodaySales, setGlobalTodaySales}) {
             });
         } catch(error) {
             console.error("Error submitting booking:", error);
-            alert("Failed to submit booking. Please try again.");
+            alert("Failed to submit booking. Please try again or call Johnson");
         }
     };
 
