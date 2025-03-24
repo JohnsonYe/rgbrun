@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Loading from "../components/Modal/Loading";
 
 const BASE_API = "https://ga6s88cd35.execute-api.us-west-1.amazonaws.com/prod/party";
@@ -11,6 +11,60 @@ function PartySales() {
   const [tempEdits, setTempEdits] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Utility to get YYYY-MM-DD
+    const getTodayDateString = () => {
+        const today = new Date();
+        return today.toISOString().split("T")[0];
+    };
+
+  // Fetch data on page load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlFromDate = urlParams.get("fromDate");
+    const dateToUse = urlFromDate || getTodayDateString();
+
+    setFromDate(dateToUse);
+    fetchParties(dateToUse, dateToUse);
+
+    if (!urlFromDate) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("fromDate", dateToUse);
+        window.history.replaceState({}, "", url);
+    }
+  }, []);
+
+    const fetchParties = async (from, to) => {
+        const fromDateFinal = from;
+        const toDateFinal = to || from; // Default toDate if empty
+
+        const query = new URLSearchParams({
+        fromDate: fromDateFinal,
+        toDate: toDateFinal,
+        });
+
+        try {
+            setIsSubmitting(true);
+            const apiUrl = `${BASE_API}?fromDate=${from}&toDate=${to}`;
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            const enriched = data.data.map((party, index) => ({
+                ...party,
+                id: party.id || index,
+                paidDeposit: party.paidDeposit || false,
+                paidCompleted: party.paidCompleted || false,
+                remainingAmount: party.amount,
+            }));
+
+            setParties(enriched);
+        } catch (error) {
+            console.error("Error fetching parties:", error);
+            alert("Failed to fetch parties");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
   const handleSearch = async () => {
     if (!fromDate) return alert("Please select a from date");
     const query = new URLSearchParams({
@@ -18,27 +72,15 @@ function PartySales() {
       ...(toDate && { toDate }),
     });
 
-    try {
-      setIsSubmitting(true);
-      const apiUrl = `${BASE_API}?fromDate=${fromDate}&toDate=${toDate}`;
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-
-      const enriched = data.data.map((party, index) => ({
-        ...party,
-        id: party.id || index,
-        paidDeposit: party.paidDeposit || false,
-        paidCompleted: party.paidCompleted || false,
-        remainingAmount: party.amount,
-      }));
-
-      setParties(enriched);
-    } catch (error) {
-      console.error("Error fetching parties:", error);
-      alert("Failed to fetch parties");
-    } finally {
-        setIsSubmitting(false);
+    fetchParties(fromDate, toDate);
+    const url = new URL(window.location.href);
+    url.searchParams.set("fromDate", fromDate);
+    if (toDate) {
+        url.searchParams.set("toDate", toDate);
+    } else {
+        url.searchParams.delete("toDate");
     }
+    window.history.pushState({}, "", url);
   };
 
   const handleEdit = (id) => {
@@ -107,7 +149,7 @@ function PartySales() {
 
             <button onClick={handleSearch}>Search</button>
         </div>
-
+        <div>Parties: {parties.length}</div>
         {parties.length > 0 && (
             <table border="1" cellPadding="8" cellSpacing="0" style={{ width: "100%" }}>
             <thead>

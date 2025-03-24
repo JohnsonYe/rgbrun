@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Modal.css";
+import Loading from "./Loading";
 
 const PARTY_CREATION_API = "https://ga6s88cd35.execute-api.us-west-1.amazonaws.com/prod/party";
 
@@ -47,6 +48,7 @@ function PartyModal({ onClose, globalTodaySales, setGlobalTodaySales}) {
         amount: 0,
         endTime: "",
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Handle input changes
     const handleChange = (e) => {
@@ -128,6 +130,7 @@ function PartyModal({ onClose, globalTodaySales, setGlobalTodaySales}) {
         };
 
         try {
+            setIsSubmitting(true);
             const response = await fetch(PARTY_CREATION_API, {
                 method: "POST",
                 headers: {
@@ -143,28 +146,23 @@ function PartyModal({ onClose, globalTodaySales, setGlobalTodaySales}) {
             const responseData = await response.json();
             console.log("Booking Successful:", responseData);
 
-            // Optionally reset the form
-            setFormData({
-                eventDate: "",
-                eventTime: "",
-                customerName: "",
-                phoneNumber: "",
-                emailAddress: "",
-                packageOption: null,
-                addOn30Minutes: 0,
-                comment: "",
-                amount: 0,
-                endTimeValue: "",
-                endTimeDisplay: "",
-            });
+            const url = new URL(window.location.href);
+            url.searchParams.set("fromDate", formData.eventDate);
+            url.searchParams.delete("toDate");
+            window.history.pushState({}, "", url);
+            onClose();
         } catch(error) {
             console.error("Error submitting booking:", error);
             alert("Failed to submit booking. Please try again or call Johnson");
+        } finally {
+            setIsSubmitting(false);
+            window.location.reload();
         }
     };
 
     return (
         <div className="modal-overlay" onClick={onClose}>
+          {isSubmitting && <Loading />}
           <div className="modal" onClick={(e) => e.stopPropagation()}>
           <form onSubmit={handleSubmit}>
                 <div className="form-group">
