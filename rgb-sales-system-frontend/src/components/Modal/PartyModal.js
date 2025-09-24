@@ -5,31 +5,31 @@ import Loading from "./Loading";
 const PARTY_CREATION_API = "https://ga6s88cd35.execute-api.us-west-1.amazonaws.com/prod/party";
 
 const PACKAGE_OPTIONS = [
-    {   
-        tag: "PRIVATE_GAME_WEEKDAY",
-        name: "Private Game (Weekday)",
+    {
+        tag: "PRIVATE_GAME_10",
+        name: "Private Game Up to 10 People",
         price: 149,
         addOn30MinutesPrice: 50,
         duration: 60
     },
-    {   
-        tag: "PRIVATE_GAME",
-        name: "Private Game (Weekend)",
+    {
+        tag: "PRIVATE_GAME_15",
+        name: "Private Game Up to 15 People",
         price: 199,
         addOn30MinutesPrice: 50,
         duration: 60
     },
-    {   
-        tag: "PRIVATE_EVENT",
-        name: "Private Event 10-15 People",
-        price: 400,
-        addOn30MinutesPrice: 50,
+    {
+        tag: "PRIVATE_EVENT_WEEKDAY",
+        name: "Private event on weekdays",
+        price: 360,
+        addOn30MinutesPrice: 100,
         duration: 90
     },
-    {   
-        tag: "PRIVATE_EVENT_15",
-        name: "Private Game 15+ People",
-        price: 500,
+    {
+        tag: "PRIVATE_EVENT_WEEKEND",
+        name: "Private event on weekends",
+        price: 450,
         addOn30MinutesPrice: 100,
         duration: 90
     }

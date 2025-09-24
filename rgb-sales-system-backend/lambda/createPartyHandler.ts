@@ -46,7 +46,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       }),
     };
   } catch (error) {
-    console.error('Error creating sale:', error);
+    console.error('Error creating party:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({
