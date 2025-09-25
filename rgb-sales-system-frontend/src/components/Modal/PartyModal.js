@@ -218,8 +218,8 @@ function PartyModal({ onClose, globalTodaySales, setGlobalTodaySales}) {
                 </div>
 
                 <div className="form-group">
-                    <label>Total Amount</label>
-                    <input type="text" value={`$${formData.amount}`} readOnly />
+                    <label>Total Amount ($)</label>
+                    <input type="text" name="amount" value={`${formData.amount}`} onChange={handleChange} />
                 </div>
 
                 <button type="submit" className="submit-button">Submit</button>
