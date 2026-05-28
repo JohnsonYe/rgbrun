@@ -3,6 +3,7 @@ import TodaySales from "../../pages/TodaySales";
 import HistorySales from "../../pages/HistorySales";
 import PartySales from "../../pages/PartySales";
 import { Routes, Route } from "react-router-dom";
+import "./MainContent.css";
 
 function MainContent({
   globalTodaySales, 

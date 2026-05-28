@@ -1,0 +1,46 @@
+.RgbRunSalesApp {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #f5f7fb 0%, #eef2f8 100%);
+}
+
+.app-shell {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 32px 56px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.page-header .title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.page-header .subtitle {
+  margin: 4px 0 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    padding: 20px 16px 40px;
+  }
+  .page-header .title {
+    font-size: 22px;
+  }
+}

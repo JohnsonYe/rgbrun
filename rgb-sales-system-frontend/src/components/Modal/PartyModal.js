@@ -164,6 +164,15 @@ function PartyModal({ onClose, globalTodaySales, setGlobalTodaySales}) {
         <div className="modal-overlay" onClick={onClose}>
           {isSubmitting && <Loading />}
           <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+                <div>
+                    <h2 className="modal-title">Create Party</h2>
+                    <p className="modal-subtitle">Book a private event.</p>
+                </div>
+                <button type="button" className="close-btn" onClick={onClose} aria-label="Close">
+                    ×
+                </button>
+            </div>
           <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>Event Date</label>
@@ -217,18 +226,22 @@ function PartyModal({ onClose, globalTodaySales, setGlobalTodaySales}) {
                     <textarea name="comment" value={formData.comment} onChange={handleChange} rows="3" />
                 </div>
 
-                <div className="form-group">
-                    <label>Total Amount ($)</label>
-                    <input type="text" name="amount" value={`${formData.amount}`} onChange={handleChange} />
+                <div className="amount-preview">
+                    <div>
+                        <div className="amount-label">Total Amount</div>
+                        <div className="amount-value">${Number(formData.amount || 0).toFixed(2)}</div>
+                    </div>
+                    <input
+                        type="number"
+                        className="amount-input"
+                        name="amount"
+                        value={formData.amount}
+                        onChange={handleChange}
+                    />
                 </div>
 
-                <button type="submit" className="submit-button">Submit</button>
+                <button type="submit" className="submit-button">Book Party</button>
             </form>
-          
-    
-            <button type="button" className="close-btn" onClick={onClose}>
-              Close
-            </button>
           </div>
         </div>
       );

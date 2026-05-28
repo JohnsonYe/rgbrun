@@ -4,6 +4,7 @@ import MainContent from "./components/MainContent/MainContent";
 import { BrowserRouter as Router } from 'react-router-dom';
 import Modal from "./components/Modal/Modal";
 import PartyModal from "./components/Modal/PartyModal";
+import "./App.css";
 
 function App() {
   const [showModal, setShowModal] = useState(false);
