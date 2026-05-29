@@ -154,8 +154,7 @@ function SalesForm({ globalTodaySales, setGlobalTodaySales, onClose }) {
 
             if (response.ok) {
                 const result = await response.json();
-                globalTodaySales.push(result.salesData);
-                setGlobalTodaySales(globalTodaySales);
+                setGlobalTodaySales([...globalTodaySales, result.salesData]);
             } else {
                 const error = await response.json();
                 alert(`Error: ${error.message}`);
@@ -354,8 +353,7 @@ function DrinksForm({ globalTodaySales, setGlobalTodaySales, onClose }) {
 
             if (response.ok) {
                 const result = await response.json();
-                globalTodaySales.push(result.salesData);
-                setGlobalTodaySales(globalTodaySales);
+                setGlobalTodaySales([...globalTodaySales, result.salesData]);
             } else {
                 const error = await response.json();
                 alert(`Error: ${error.message}`);
